@@ -17,9 +17,9 @@ def read_and_process_data(path):
     data['id'] = data['id'].apply(lambda x: int(str(x), 16) if isinstance(x, str) else x)
     data['payload'] = data['payload'].apply(lambda x: int(str(x), 16) if isinstance(x, str) else x)
     X = data[['id', 'dlc', 'payload']].copy()
-    scaler = StandardScaler()
-    X_scaled = scaler.fit_transform(X)
-    return pd.DataFrame(X_scaled, columns=X.columns)
+    #scaler = StandardScaler()
+    #X_scaled = scaler.fit_transform(X)
+    return pd.DataFrame(X, columns=X.columns)
 
 def train_and_save(data, algo='IsolationForest'):
     if algo == 'IsolationForest':
