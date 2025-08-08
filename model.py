@@ -13,12 +13,10 @@ def load_pickle(path):
         return pickle.load(f)
 
 def read_and_process_data(path):
-    data = pd.read_csv(path, header=None, names=["id", "dlc", "payload"])
+    data = pd.read_csv(path, header=None, names=["id", "dlc", "payload", "time"])
     data['id'] = data['id'].apply(lambda x: int(str(x), 16) if isinstance(x, str) else x)
     data['payload'] = data['payload'].apply(lambda x: int(str(x), 16) if isinstance(x, str) else x)
-    X = data[['id', 'dlc', 'payload']].copy()
-    #scaler = StandardScaler()
-    #X_scaled = scaler.fit_transform(X)
+    X = data[['id', 'dlc', 'payload', 'time']].copy()
     return pd.DataFrame(X, columns=X.columns)
 
 def train_and_save(data, algo='IsolationForest'):
@@ -43,7 +41,8 @@ def show_anomalies(anomalies):
     
 def detect_anomaly(row, algo='IsolationForest'):
     data = pd.DataFrame([row])
-    data = read_and_process_data(data)
+    print(row['payload'])
+    # data = read_and_process_data("can_log.csv")
     anomalies = predict_anomalies(data, algo)
     return anomalies
 
