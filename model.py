@@ -88,7 +88,7 @@ def detect_anomaly(row, algo='IsolationForest'):
     return anomalies
 
 def main():
-    data = read_and_process_data('can_log_old.csv')
+    data = read_and_process_data('can_log.csv')
     train_and_save(data, algo='OneClassSVM')
     test_model('can_log_test.csv')
 
