@@ -25,7 +25,7 @@ def listen_and_detect():
                 }
                 anomalies = detect_anomaly(row_data)
                 if not anomalies.empty:
-                    print(f"from message {row_data}")
+                    print(f"Detected anomalies on message {row_data}")
                     pass
                 else:
                     print("No anomalies detected for message:", row_data)

