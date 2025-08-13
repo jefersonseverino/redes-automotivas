@@ -64,7 +64,7 @@ def main():
         ("Injection Attack", injection_attack, None),
     ]
 
-    duration_per_attack = 5
+    duration_per_attack = 30
 
     for name, attack_fn, arg in attacks:
         print(f"\n=== STARTING: {name} ===")
