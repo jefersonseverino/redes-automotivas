@@ -7,7 +7,7 @@ def listen_and_save(channel='vcan0', interface='socketcan', log_file='can.log'):
         messages_interval = {}
         last_id = ""
         last_message_count = 0
-        with open('can_log_test.csv', 'w', newline='\n') as file:
+        with open('./data/can_log.csv', 'w', newline='\n') as file:
             while True:
                 for msg in bus: 
                     payload = "".join(["{:02X}".format(byte) for byte in msg.data])

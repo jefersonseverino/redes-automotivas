@@ -34,15 +34,15 @@ def train_and_save(data, algo='IsolationForest'):
         raise ValueError(f"Unsupported algorithm: {algo}")
     
     model.fit(data)
-    save_pickle(model, f'{algo}_model.pkl')
+    save_pickle(model, f'./model/{algo}_model.pkl')
     
 def predict_anomalies(data, algo='IsolationForest'):
-    model = load_pickle(f'{algo}_model.pkl')
+    model = load_pickle(f'./model/{algo}_model.pkl')
     data['anomaly'] = model.predict(data)
     return data[data['anomaly'] == -1]
 
 def predict_model(data, algo='IsolationForest'):
-    model = load_pickle(f'{algo}_model.pkl')
+    model = load_pickle(f'./model/{algo}_model.pkl')
     data['anomaly'] = model.predict(data)
     return data
 
@@ -55,7 +55,7 @@ def test_model(path, algo='IsolationForest'):
 
     X_test = test_data.drop(columns=['label'])
 
-    model = load_pickle(f'{algo}_model.pkl')
+    model = load_pickle(f'./model/{algo}_model.pkl')
 
     y_pred = model.predict(X_test)
 
@@ -88,9 +88,9 @@ def detect_anomaly(row, algo='IsolationForest'):
     return anomalies
 
 def main():
-    data = read_and_process_data('can_log.csv')
+    data = read_and_process_data('./data/can_log.csv')
     train_and_save(data, algo='OneClassSVM')
-    test_model('can_log_test.csv', algo='OneClassSVM')
+    test_model('./data/can_log_test.csv', algo='OneClassSVM')
 
 if __name__ == "__main__":
     main()
