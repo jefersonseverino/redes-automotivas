@@ -14,13 +14,13 @@ def load_pickle(path):
         return pickle.load(f)
 
 def read_and_process_data(path):
-    data = pd.read_csv(path, header=None, names=["id", "dlc", "payload", "time"], dtype=str)
+    data = pd.read_csv(path, header=None, names=["id", "dlc", "payload", "time", "score"], dtype=str)
     data['id'] = data['id'].apply(lambda x: int(str(x), 16) if isinstance(x, str) else x)
     data['payload'] = data['payload'].apply(lambda x: int(str(x), 16) if isinstance(x, str) else x)
     return data
 
 def read_and_process_data_with_label(path):
-    data = pd.read_csv(path, header=None, names=["id", "dlc", "payload", "time", "label"])
+    data = pd.read_csv(path, header=None, names=["id", "dlc", "payload", "time", "score", "label"])
     data['id'] = data['id'].apply(lambda x: int(str(x), 16) if isinstance(x, str) else x)
     data['payload'] = data['payload'].apply(lambda x: int(str(x), 16) if isinstance(x, str) else x)
     return data
@@ -90,7 +90,7 @@ def detect_anomaly(row, algo='IsolationForest'):
 def main():
     data = read_and_process_data('can_log.csv')
     train_and_save(data, algo='OneClassSVM')
-    test_model('can_log_test.csv')
+    test_model('can_log_test.csv', algo='OneClassSVM')
 
 if __name__ == "__main__":
     main()
