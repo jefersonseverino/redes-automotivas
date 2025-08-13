@@ -15,3 +15,5 @@ Arquivos:
 `listen_and_detect.py`: Responsável por ouvir o barramento CAN, dar como entrada as mensagens CAN para o modelo de detecção e sinalizar anomalias
 
 `attack.py`: Implementação de ataques e mensagens maliciosas na rede CAN. São implementados os ataques de replay, injection, Dos e spoofing.
+
+`generate_benign_traffic.py`: Gera mensagens benignas sintéticas na rede CAN.
