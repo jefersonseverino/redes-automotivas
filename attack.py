@@ -58,9 +58,9 @@ def main():
     recorded_messages = capture_messages(bus, duration=2)
 
     attacks = [
-        #("Replay Attack", replay_attack, recorded_messages),
-        # ("DoS Attack", dos_attack, None),
-        #("Spoofing Attack", spoofing_attack, None),
+        ("Replay Attack", replay_attack, recorded_messages),
+        ("DoS Attack", dos_attack, None),
+        ("Spoofing Attack", spoofing_attack, None),
         ("Injection Attack", injection_attack, None),
     ]
 
